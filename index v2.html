@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>100% 3D - Presupuesto de Impresion 3D</title>
+  <meta name="theme-color" content="#0b1117">
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1117;
+      --panel: #121a22;
+      --panel-2: #192530;
+      --ink: #f5f7fb;
+      --muted: #9faabe;
+      --line: rgba(255, 255, 255, .12);
+      --cyan: #36c6e8;
+      --green: #62d98e;
+      --yellow: #f4c95d;
+      --pink: #e96f5c;
+      --orange: #ee8b4a;
+      --red: #ff5c7a;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .38);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(54, 198, 232, .22), transparent 28rem),
+        radial-gradient(circle at 86% 14%, rgba(238, 139, 74, .18), transparent 24rem),
+        radial-gradient(circle at 50% 100%, rgba(98, 217, 142, .16), transparent 30rem),
+        linear-gradient(135deg, #0b1117 0%, #121b24 44%, #21172a 72%, #171d1c 100%);
+      background-size: 140% 140%, 130% 130%, 150% 150%, 220% 220%;
+      animation: livingBackground 18s ease-in-out infinite alternate;
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    @keyframes livingBackground {
+      0% { background-position: 0% 0%, 100% 0%, 50% 100%, 0% 50%; }
+      50% { background-position: 16% 8%, 82% 16%, 42% 82%, 72% 50%; }
+      100% { background-position: 5% 18%, 95% 28%, 58% 88%, 100% 50%; }
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1500px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 42px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, .55fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero, .result-card, .panel, .mini-card {
+      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero {
+      padding: clamp(22px, 4vw, 42px);
+      position: relative;
+      overflow: hidden;
+      min-height: 250px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -8% -45% 45%;
+      height: 180px;
+      background: linear-gradient(90deg, transparent, rgba(54, 198, 232, .24), rgba(98, 217, 142, .22), transparent);
+      transform: rotate(-8deg);
+      filter: blur(10px);
+      pointer-events: none;
+      animation: sweep 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes sweep {
+      from { transform: translateX(-5%) rotate(-8deg); opacity: .72; }
+      to { transform: translateX(8%) rotate(-8deg); opacity: 1; }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 24px var(--green);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 74px);
+      line-height: .95;
+      letter-spacing: 0;
+      max-width: 950px;
+    }
+
+    .hero p {
+      max-width: 820px;
+      color: var(--muted);
+      font-size: clamp(15px, 1.4vw, 18px);
+      line-height: 1.6;
+      margin: 18px 0 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      color: var(--ink);
+      font-weight: 950;
+      font-size: 18px;
+    }
+
+    .brand-mark span {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: inline-grid;
+      place-items: center;
+      color: #071017;
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      font-size: 13px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--ink);
+      background: rgba(255,255,255,.08);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.14);
+      border-color: rgba(255,255,255,.24);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      color: #061018;
+      border: 0;
+      font-weight: 900;
+    }
+
+    .result-card {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      background:
+        linear-gradient(135deg, rgba(66,216,255,.14), rgba(255,111,174,.08)),
+        rgba(20, 27, 39, .86);
+    }
+
+    .result-label {
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+
+    .price {
+      font-size: clamp(42px, 6vw, 70px);
+      line-height: .9;
+      font-weight: 950;
+      letter-spacing: 0;
+      margin: 8px 0;
+      text-shadow: 0 0 34px rgba(54, 198, 232, .22);
+    }
+
+    .sub-price {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(0,0,0,.15);
+    }
+
+    .pill strong {
+      display: block;
+      font-size: 20px;
+      margin-top: 4px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(360px, .78fr) minmax(520px, 1.22fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 18px;
+      background-color: rgba(20, 27, 39, .82);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: 20px;
+    }
+
+    h3 {
+      font-size: 15px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(5, 10, 18, .55);
+      color: var(--ink);
+      padding: 0 12px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(66, 216, 255, .72);
+      box-shadow: 0 0 0 3px rgba(66, 216, 255, .12);
+    }
+
+    input[type="range"] {
+      padding: 0;
+      min-height: 30px;
+      accent-color: var(--cyan);
+      background: transparent;
+      border: 0;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      min-height: 18px;
+      accent-color: var(--green);
+    }
+
+    .check-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      background: rgba(5, 10, 18, .55);
+      border-radius: 8px;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    .tab.active {
+      color: #061018;
+      background: var(--yellow);
+      border-color: transparent;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-card {
+      padding: 14px;
+      min-height: 92px;
+      background: rgba(20, 27, 39, .72);
+      box-shadow: none;
+    }
+
+    .mini-card b {
+      display: block;
+      font-size: 22px;
+      margin-top: 8px;
+      word-break: break-word;
+    }
+
+    .breakdown {
+      display: grid;
+      gap: 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+    }
+
+    .row strong {
+      color: var(--ink);
+    }
+
+    .compact-budget {
+      max-height: 340px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .web-note {
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .insight {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(255,255,255,.055);
+      min-height: 82px;
+    }
+
+    .insight span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .insight b {
+      display: block;
+      margin-top: 7px;
+      font-size: 19px;
+    }
+
+    .status-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .status-chip {
+      border: 1px solid rgba(98, 217, 142, .34);
+      background: rgba(98, 217, 142, .1);
+      color: #b9ffd0;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .sales-list {
+      display: grid;
+      gap: 8px;
+      max-height: 260px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .sale-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: rgba(255,255,255,.045);
+    }
+
+    .sale-item small {
+      display: block;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .icon-btn {
+      min-width: 36px;
+      min-height: 36px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.07);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .bar {
+      height: 14px;
+      background: rgba(255,255,255,.08);
+      border-radius: 99px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 10px;
+    }
+
+    .bar span {
+      display: block;
+      min-width: 1px;
+      transition: width .2s ease;
+    }
+
+    .b-fil { background: var(--cyan); }
+    .b-ele { background: var(--yellow); }
+    .b-lab { background: var(--pink); }
+    .b-dep { background: var(--green); }
+    .b-oth { background: var(--orange); }
+
+    .notice {
+      border: 1px solid rgba(255, 209, 102, .28);
+      background: rgba(255, 209, 102, .08);
+      color: #ffe2a1;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .drop {
+      border: 1px dashed rgba(66, 216, 255, .5);
+      background: rgba(66,216,255,.06);
+      border-radius: 8px;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .printer-card {
+      display: block;
+      border: 1px solid var(--line);
+      background: rgba(5, 10, 18, .38);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .printer-card img {
+      width: 100%;
+      max-height: 340px;
+      aspect-ratio: 16 / 10;
+      object-fit: contain;
+      background: linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    a { color: var(--cyan); }
+
+    .hidden { display: none; }
+
+    @media (max-width: 1120px) {
+      header, .app { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 20px, 1500px); padding-top: 12px; }
+      .grid, .grid.three, .sub-price, .metrics { grid-template-columns: 1fr; }
+      .insight-grid { grid-template-columns: 1fr; }
+      .printer-card img { max-height: 260px; }
+      .span-2, .span-3 { grid-column: auto; }
+      .tabs { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+      .price { font-size: 42px; }
+    }
+
+    @media print {
+      body { background: #fff; color: #111; animation: none; }
+      .hero-actions, .tabs, .drop, .btn, .no-report, .eyebrow { display: none !important; }
+      header { display: block; }
+      header, .app { grid-template-columns: 1fr; }
+      .shell { width: 100%; padding: 0; }
+      .hero { min-height: 0; padding: 18px 22px 10px; }
+      .hero p { display: none; }
+      .result-card, .panel { padding: 14px 22px; }
+      .result-card { display: block; margin-top: 0; }
+      .price { font-size: 48px; }
+      @page { size: A4; margin: 12mm; }
+      .hero, .panel, .result-card, .mini-card { box-shadow: none; background: #fff; color: #111; border-color: #ccc; }
+      label, .result-label, .row, .source-list, .hero p { color: #333; }
+      .brand-mark span { color: #111; border: 1px solid #999; background: #fff; }
+      .printer-card { break-inside: avoid; background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <section class="hero">
+        <div class="eyebrow"><span class="dot"></span> Costeo total para Cordoba, Argentina</div>
+        <div class="brand-mark"><span>GG</span> Calculadora de Gena y Gaspi</div>
+        <h1>Presupuesto de impresion 3D</h1>
+        <p>Calculadora simple para armar presupuestos de impresion 3D con precio final, material utilizado, tiempo de impresion y ganancia estimada.</p>
+        <div class="hero-actions">
+          <button class="btn primary" id="btnExample">Cargar ejemplo</button>
+          <button class="btn" id="btnSave">Guardar valores</button>
+          <button class="btn" id="btnReset">Reset</button>
+          <button class="btn" id="btnPrint">Imprimir reporte</button>
+        </div>
+      </section>
+
+      <aside class="result-card" aria-live="polite">
+        <div>
+          <div class="result-label">Precio sugerido final</div>
+          <div class="price" id="finalPrice">$0</div>
+          <div class="status-line no-report">
+            <span class="status-chip" id="qualityChip">Calculando</span>
+            <span class="status-chip" id="machineChip">Impresora lista</span>
+            <span class="status-chip" id="timeChip">Tiempo OK</span>
+          </div>
+          <div class="sub-price hidden">
+            <div class="pill">
+              <span class="result-label">Ganancia</span>
+              <strong id="realCost">$0</strong>
+            </div>
+            <div class="pill">
+              <span class="result-label">Margen</span>
+              <strong id="profit">0%</strong>
+            </div>
+          </div>
+        </div>
+        <div class="notice" id="smartNote">Completá los datos y vas a ver una lectura rapida del trabajo.</div>
+      </aside>
+    </header>
+
+    <section class="app">
+      <div class="stack no-report">
+        <section class="panel">
+          <div class="section-title">
+            <h2>Calculadora de costos</h2>
+            <h3>modelo Erexit</h3>
+          </div>
+          <div class="grid">
+            <div class="field span-2">
+              <label for="jobName">Nombre del trabajo</label>
+              <input id="jobName" value="Pieza personalizada">
+            </div>
+            <div class="field">
+              <label for="printer">Impresora a utilizar</label>
+              <select id="printer">
+                <option value="ad5x">FLASHFORGE ADVENTURER AD5X</option>
+                <option value="tronxy">TRONXY XY-2 PRO 3D PRINTER</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="material">Material</label>
+              <select id="material">
+                <option value="pla">PLA</option>
+                <option value="petg">PETG</option>
+                <option value="abs">ABS / ASA</option>
+                <option value="tpu">TPU</option>
+              </select>
+            </div>
+            <div class="printer-card span-2">
+              <img id="printerImage" src="" alt="Impresora seleccionada">
+            </div>
+            <div class="field">
+              <label for="filamentPrice">Precio KG ($)</label>
+              <input id="filamentPrice" type="number" min="0" step="100" value="20000">
+            </div>
+            <div class="field">
+              <label for="manualKwh">Precio kWh ($)</label>
+              <input id="manualKwh" type="number" min="0" step="1" value="140">
+            </div>
+            <div class="field">
+              <label for="customWatts">Consumo real por hora (W)</label>
+              <input id="customWatts" type="number" min="0" step="1" value="170">
+            </div>
+            <div class="field">
+              <label for="lifeHours">Desgaste maquina (horas)</label>
+              <input id="lifeHours" type="number" min="1" step="100" value="2500">
+            </div>
+            <div class="field">
+              <label for="maintenanceHour">Precio repuestos ($)</label>
+              <input id="maintenanceHour" type="number" min="0" step="100" value="80000">
+            </div>
+            <div class="field">
+              <label for="failureRate">% margen de error</label>
+              <input id="failureRate" type="number" min="0" max="100" step="1" value="10">
+            </div>
+            <div class="field">
+              <label for="hours">Tiempo: horas</label>
+              <input id="hours" type="number" min="0" step="1" value="5">
+            </div>
+            <div class="field">
+              <label for="minutes">Tiempo: minutos</label>
+              <input id="minutes" type="number" min="0" max="59" step="1" value="30">
+            </div>
+            <div class="field">
+              <label for="grams">Gramos de filamento</label>
+              <input id="grams" type="number" min="0" step="1" value="80">
+            </div>
+            <div class="field">
+              <label for="fixedConsumables">Insumos ($)</label>
+              <input id="fixedConsumables" type="number" min="0" step="10" value="250">
+            </div>
+            <div class="field">
+              <label for="margin">Margen de ganancia (multiplicador)</label>
+              <input id="margin" type="number" min="1" step="0.1" value="4">
+              <div class="source-list">Minorista 4 · Mayorista 3 · Llaveros 5</div>
+            </div>
+            <div class="field">
+              <label for="isCustom">Personalizado</label>
+              <label class="check-field">
+                <input id="isCustom" type="checkbox">
+                Es personalizado
+              </label>
+            </div>
+            <div class="field">
+              <label for="customCharge">Recargo personalizado ($)</label>
+              <input id="customCharge" type="number" min="0" step="100" value="1500">
+            </div>
+            <div class="field">
+              <label>Ganancia estimada</label>
+              <div class="mini-card"><b id="expectedProfit">$0</b></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title">
+            <h2>Consumo por impresora</h2>
+            <h3>segun material</h3>
+          </div>
+          <div class="metrics">
+            <div class="mini-card"><span class="result-label">ADVENTURER AD5X</span><b id="consumptionAd5x">0 W</b></div>
+            <div class="mini-card"><span class="result-label">TRONXY XY-2 PRO</span><b id="consumptionTronxy">0 W</b></div>
+          </div>
+        </section>
+
+        <div class="hidden" aria-hidden="true">
+          <input id="spoolWaste" type="number" value="0">
+          <input id="printerPrice" type="number" value="900000">
+          <input id="supportPercent" type="number" value="0">
+          <input id="purgeGrams" type="number" value="0">
+          <input id="packaging" type="number" value="0">
+          <input id="designCost" type="number" value="0">
+          <input id="monthlyConsumption" type="number" value="350">
+          <input id="billMultiplier" type="number" value="1">
+          <input id="preheatMinutes" type="number" value="0">
+          <input id="prepMinutes" type="number" value="0">
+          <input id="postMinutes" type="number" value="0">
+          <input id="laborHour" type="number" value="0">
+          <input id="commission" type="number" value="0">
+          <input id="taxRate" type="number" value="0">
+          <input id="minCharge" type="number" value="0">
+          <input id="roundTo" type="number" value="100">
+          <select id="energyMode"><option value="manual">Manual</option><option value="epec">EPEC</option></select>
+          <select id="segment"><option value="n1">N1</option><option value="n3">N3</option><option value="n2">N2</option></select>
+          <select id="hourBand"><option value="rest">Restantes</option><option value="valley">Valle</option><option value="peak">Pico</option></select>
+        </div>
+
+      </div>
+
+      <div class="stack">
+        <section class="panel">
+          <div class="section-title">
+            <h2>Presupuesto</h2>
+            <h3 id="jobBadge">Pieza personalizada</h3>
+          </div>
+          <div class="metrics">
+            <div class="mini-card"><span class="result-label">Material total</span><b id="mMaterial">0 g</b></div>
+            <div class="mini-card"><span class="result-label">Tiempo de impresion</span><b id="mEnergy">0 h</b></div>
+          </div>
+        </section>
+
+        <section class="panel no-report">
+          <div class="section-title">
+            <h2>Detalle interno</h2>
+            <h3>costos</h3>
+          </div>
+          <div class="breakdown compact-budget" id="breakdown"></div>
+        </section>
+
+        <section class="panel no-report">
+          <div class="section-title">
+            <h2>Niveles de precio</h2>
+            <h3>referencia</h3>
+          </div>
+          <div class="grid three">
+            <div class="mini-card"><span class="result-label">Mayorista x3</span><b id="tierFriend">$0</b></div>
+            <div class="mini-card"><span class="result-label">Minorista x4</span><b id="tierNormal">$0</b></div>
+            <div class="mini-card"><span class="result-label">Llaveros x5</span><b id="tierPremium">$0</b></div>
+          </div>
+        </section>
+
+        <section class="panel no-report">
+          <div class="section-title">
+            <h2>Cambio de impresora</h2>
+            <h3>por que cambia</h3>
+          </div>
+          <div class="web-note" id="printerReason">El precio cambia porque cada impresora consume energia, mantenimiento y desgaste de forma distinta.</div>
+        </section>
+
+        <section class="panel no-report">
+          <div class="section-title">
+            <h2>Resumen rapido</h2>
+            <h3>control</h3>
+          </div>
+          <div class="insight-grid">
+            <div class="insight"><span>Trabajo</span><b id="insightJob">Normal</b></div>
+            <div class="insight"><span>Material</span><b id="insightMaterial">0 g</b></div>
+            <div class="insight"><span>Rentabilidad</span><b id="insightProfit">0%</b></div>
+          </div>
+        </section>
+
+        <section class="panel no-report">
+          <div class="section-title">
+            <h2>Ventas del mes</h2>
+            <h3>registro</h3>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="saleMonth">Mes</label>
+              <input id="saleMonth" type="month">
+            </div>
+            <div class="field">
+              <label for="saleDate">Fecha</label>
+              <input id="saleDate" type="date">
+            </div>
+            <div class="field span-2">
+              <label for="saleName">Trabajo vendido</label>
+              <input id="saleName" value="Pieza personalizada">
+            </div>
+            <div class="field">
+              <label for="saleGrams">Gramos vendidos</label>
+              <input id="saleGrams" type="number" min="0" step="1" value="0">
+            </div>
+            <div class="field">
+              <label for="salePrice">Precio cobrado ($)</label>
+              <input id="salePrice" type="number" min="0" step="100" value="0">
+            </div>
+            <div class="field span-2">
+              <button class="btn primary" id="btnAddSale" type="button">Registrar venta</button>
+            </div>
+          </div>
+          <div class="metrics" style="margin-top: 12px;">
+            <div class="mini-card"><span class="result-label">Vendido</span><b id="monthSold">$0</b></div>
+            <div class="mini-card"><span class="result-label">Ganancia</span><b id="monthProfit">$0</b></div>
+            <div class="mini-card"><span class="result-label">Gramos</span><b id="monthGrams">0 g</b></div>
+            <div class="mini-card"><span class="result-label">Ventas</span><b id="monthCount">0</b></div>
+          </div>
+          <div class="metrics" style="margin-top: 12px;">
+            <div class="mini-card"><span class="result-label">Costo sin ganancia</span><b id="saleCostPreview">$0</b></div>
+            <div class="mini-card"><span class="result-label">Costo mensual</span><b id="monthCost">$0</b></div>
+          </div>
+          <div class="sales-list" id="salesList" style="margin-top: 12px;"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const fields = Array.from(document.querySelectorAll("input, select")).filter(el => el.id && el.type !== "file");
+    let currentQuote = { price: 0, cost: 0, profit: 0, grams: 0 };
+
+    const printers = {
+      ad5x: {
+        label: "FLASHFORGE ADVENTURER AD5X",
+        image: "assets/ad5x.webp",
+        volume: "220 x 220 x 220 mm",
+        profile: "CoreXY multicolor",
+        description: "Equipo rapido con sistema multicolor integrado. Conviene contemplar purgas cuando el trabajo usa varios colores.",
+        price: 900000,
+        watts: { pla: 170, petg: 205, abs: 250, tpu: 160 },
+        maintenance: 95,
+        life: 3000,
+        note: "Equipo recomendado para trabajos rapidos y multicolor. Revisar purgas si se usan varios colores."
+      },
+      tronxy: {
+        label: "TRONXY XY-2 PRO 3D PRINTER",
+        image: "assets/tronxy-xy2-pro.jpg",
+        volume: "255 x 255 x 260 mm",
+        profile: "Cartesiana I3",
+        description: "Equipo cartesiano de mayor volumen util. Es conveniente controlar tiempos largos, nivelacion y riesgo de repeticion.",
+        price: 320000,
+        watts: { pla: 145, petg: 185, abs: 220, tpu: 135 },
+        maintenance: 70,
+        life: 2200,
+        note: "Equipo adecuado para piezas medianas y grandes. En trabajos largos conviene revisar margen y amortizacion."
+      }
+    };
+
+    const materials = {
+      pla: { label: "PLA", price: 20000, waste: 3 },
+      petg: { label: "PETG", price: 20000, waste: 5 },
+      abs: { label: "ABS / ASA", price: 20000, waste: 8 },
+      tpu: { label: "TPU", price: 20000, waste: 6 }
+    };
+
+    const epec = {
+      // Valores variables base en $/kWh del cuadro EPEC residencial oficial accesible.
+      n1: {
+        low: { peak: 153.13011, valley: 121.00462, rest: 151.66371 },
+        mid: { peak: 212.44134, valley: 150.66024, rest: 210.97494 },
+        high: { peak: 236.52964, valley: 162.70439, rest: 235.06324 },
+        veryHigh: { peak: 259.74755, valley: 174.31334, rest: 258.28115 }
+      },
+      n3: {
+        low: { peak: 151.81919, valley: 151.81919, rest: 151.81919 },
+        mid: { peak: 174.06814, valley: 174.06814, rest: 174.06814 },
+        high: { peak: 196.72254, valley: 196.72254, rest: 196.72254 },
+        veryHigh: { peak: 214.85208, valley: 214.85208, rest: 214.85208 }
+      },
+      n2: {
+        low: { peak: 63.89820, valley: 63.89820, rest: 63.89820 },
+        mid: { peak: 140.89484, valley: 140.89484, rest: 140.89484 },
+        high: { peak: 161.77878, valley: 161.77878, rest: 161.77878 },
+        veryHigh: { peak: 216.27607, valley: 216.27607, rest: 216.27607 }
+      }
+    };
+
+    function money(value) {
+      return new Intl.NumberFormat("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        maximumFractionDigits: 0
+      }).format(Number.isFinite(value) ? value : 0);
+    }
+
+    function num(id) {
+      return parseFloat($(id).value) || 0;
+    }
+
+    function tierForConsumption(kwh) {
+      if (kwh <= 120) return "low";
+      if (kwh <= 500) return "mid";
+      if (kwh <= 700) return "high";
+      return "veryHigh";
+    }
+
+    function roundUp(value, step) {
+      const s = Math.max(1, step || 1);
+      return Math.ceil(value / s) * s;
+    }
+
+    function syncPreset(source) {
+      if (source === "printer") {
+        const p = printers[$("printer").value];
+        $("printerPrice").value = p.price;
+        $("lifeHours").value = p.life;
+        $("customWatts").value = p.watts[$("material").value];
+      }
+      if (source === "material") {
+        const m = materials[$("material").value];
+        $("filamentPrice").value = m.price;
+        $("spoolWaste").value = m.waste;
+        $("customWatts").value = printers[$("printer").value].watts[$("material").value];
+      }
+      calculate();
+    }
+
+    function updatePrinterCard() {
+      const p = printers[$("printer").value];
+      $("printerImage").src = p.image;
+      $("printerImage").alt = p.label;
+    }
+
+    function calculate() {
+      const printHours = num("hours") + num("minutes") / 60;
+      const rawGrams = num("grams");
+      const billableMaterial = rawGrams * (1 + num("failureRate") / 100);
+      const filamentCost = rawGrams / 1000 * num("filamentPrice");
+
+      const kwh = (num("customWatts") / 1000) * printHours;
+      const epecTier = tierForConsumption(num("monthlyConsumption"));
+      const baseKwh = epec[$("segment").value][epecTier][$("hourBand").value];
+      const kwhPrice = $("energyMode").value === "manual" ? num("manualKwh") : baseKwh * num("billMultiplier");
+      const energyCost = kwh * kwhPrice;
+
+      const wearCost = (num("maintenanceHour") / Math.max(1, num("lifeHours"))) * printHours;
+      const fixed = num("fixedConsumables");
+      const baseCost = filamentCost + energyCost + wearCost + fixed;
+      const errorCost = baseCost * (num("failureRate") / 100);
+      const realCost = baseCost + errorCost;
+      const multiplier = Math.max(1, num("margin"));
+      const customCharge = $("isCustom").checked ? num("customCharge") : 0;
+      const finalPrice = roundUp(Math.max(num("minCharge"), realCost * multiplier + customCharge), num("roundTo"));
+      const watts = num("customWatts");
+      const profitAmount = finalPrice - realCost;
+      const profitPercent = realCost > 0 ? profitAmount / realCost * 100 : 0;
+      const timeLabel = `${Math.floor(printHours)} h ${Math.round((printHours % 1) * 60)} min`;
+      currentQuote = { price: finalPrice, cost: realCost, profit: profitAmount, grams: billableMaterial };
+
+      $("finalPrice").textContent = money(finalPrice);
+      $("realCost").textContent = money(profitAmount);
+      $("profit").textContent = `${profitPercent.toFixed(0)}%`;
+      $("mMaterial").textContent = `${billableMaterial.toFixed(1)} g`;
+      $("mEnergy").textContent = timeLabel;
+      $("jobBadge").textContent = $("jobName").value || "Trabajo sin nombre";
+      updatePrinterCard();
+      $("consumptionAd5x").textContent = `${printers.ad5x.watts[$("material").value]} W`;
+      $("consumptionTronxy").textContent = `${printers.tronxy.watts[$("material").value]} W`;
+
+      const detailItems = [
+        ["Filamento", filamentCost],
+        ["Luz", energyCost],
+        ["Desgaste maquina", wearCost],
+        ["Insumos", fixed],
+        ["Margen de error", errorCost],
+        ["Personalizado", customCharge],
+        ["Costo base", realCost],
+        ["Multiplicador", multiplier],
+        ["Precio kWh usado", kwhPrice],
+        ["Consumo total", `${kwh.toFixed(2)} kWh`]
+      ];
+
+      $("breakdown").innerHTML = detailItems.map(([label, value]) => `
+        <div class="row">
+          <span>${label}</span>
+          <strong>${typeof value === "number" ? money(value) : value}</strong>
+        </div>
+      `).join("");
+
+      $("tierFriend").textContent = money(roundUp(realCost * 3, num("roundTo")));
+      $("tierNormal").textContent = money(roundUp(realCost * 4, num("roundTo")));
+      $("tierPremium").textContent = money(roundUp(realCost * 5, num("roundTo")));
+      $("printerReason").textContent = `${printers[$("printer").value].label}: el precio cambia porque esta impresora tiene un valor de equipo, mantenimiento por hora y consumo electrico distinto. En este material se calcula con ${watts.toFixed(0)} W promedio.`;
+      $("expectedProfit").textContent = `${money(profitAmount)} de ganancia estimada (${profitPercent.toFixed(0)}%).`;
+      const complexity = printHours >= 10 ? "Trabajo largo" : billableMaterial >= 180 ? "Pieza grande" : num("purgeGrams") > 0 ? "Multicolor" : "Normal";
+      const quality = profitPercent >= 60 ? "Margen fuerte" : profitPercent >= 35 ? "Margen correcto" : "Revisar precio";
+      $("qualityChip").textContent = quality;
+      $("machineChip").textContent = printers[$("printer").value].label.includes("AD5X") ? "AD5X seleccionada" : "Tronxy seleccionada";
+      $("timeChip").textContent = timeLabel;
+      $("insightJob").textContent = complexity;
+      $("insightMaterial").textContent = `${billableMaterial.toFixed(1)} g`;
+      $("insightProfit").textContent = `${profitPercent.toFixed(0)}%`;
+      syncSaleDraft();
+      renderSales();
+
+      $("smartNote").textContent = "Presupuesto actualizado.";
+    }
+
+    function monthKey(date = new Date()) {
+      return date.toISOString().slice(0, 7);
+    }
+
+    function todayKey() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function loadSales() {
+      try {
+        return JSON.parse(localStorage.getItem("calc3dSales") || "[]");
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveSales(sales) {
+      localStorage.setItem("calc3dSales", JSON.stringify(sales));
+    }
+
+    function syncSaleDraft() {
+      if (!$("saleName")) return;
+      if (!$("saleMonth").value) $("saleMonth").value = monthKey();
+      if (!$("saleDate").value) $("saleDate").value = todayKey();
+      if (!$("saleName").dataset.touched) $("saleName").value = $("jobName").value || "Pieza personalizada";
+      if (!$("saleGrams").dataset.touched) $("saleGrams").value = Math.round(currentQuote.grams || num("grams"));
+      if (!$("salePrice").dataset.touched) $("salePrice").value = Math.round(currentQuote.price || 0);
+      updateSaleCostPreview();
+    }
+
+    function estimateSaleCost() {
+      const quoteGrams = currentQuote.grams || num("grams") || 1;
+      const ratio = quoteGrams > 0 ? num("saleGrams") / quoteGrams : 1;
+      return Math.max(0, currentQuote.cost * ratio);
+    }
+
+    function updateSaleCostPreview() {
+      if (!$("saleCostPreview")) return;
+      $("saleCostPreview").textContent = money(estimateSaleCost());
+    }
+
+    function addSale() {
+      const grams = num("saleGrams");
+      const price = num("salePrice");
+      if (grams <= 0 || price <= 0) {
+        $("smartNote").textContent = "Para registrar una venta, cargá gramos y precio cobrado.";
+        return;
+      }
+      const estimatedCost = estimateSaleCost();
+      const sale = {
+        id: `${Date.now()}`,
+        date: $("saleDate").value || todayKey(),
+        name: $("saleName").value || "Venta 3D",
+        grams,
+        price,
+        cost: estimatedCost,
+        profit: price - estimatedCost
+      };
+      const sales = loadSales();
+      sales.push(sale);
+      saveSales(sales);
+      $("saleName").dataset.touched = "";
+      $("saleGrams").dataset.touched = "";
+      $("salePrice").dataset.touched = "";
+      renderSales();
+      $("smartNote").textContent = "Venta registrada.";
+    }
+
+    function deleteSale(id) {
+      saveSales(loadSales().filter(sale => sale.id !== id));
+      renderSales();
+    }
+
+    function renderSales() {
+      if (!$("salesList")) return;
+      const selectedMonth = $("saleMonth").value || monthKey();
+      const sales = loadSales().filter(sale => (sale.date || "").slice(0, 7) === selectedMonth);
+      const sold = sales.reduce((total, sale) => total + (Number(sale.price) || 0), 0);
+      const grams = sales.reduce((total, sale) => total + (Number(sale.grams) || 0), 0);
+      const cost = sales.reduce((total, sale) => total + (Number(sale.cost) || 0), 0);
+      const profit = sales.reduce((total, sale) => total + (Number(sale.profit) || 0), 0);
+      $("monthSold").textContent = money(sold);
+      $("monthProfit").textContent = money(profit);
+      $("monthGrams").textContent = `${grams.toFixed(0)} g`;
+      $("monthCount").textContent = sales.length;
+      $("monthCost").textContent = money(cost);
+      updateSaleCostPreview();
+      $("salesList").innerHTML = sales.length ? sales.slice().reverse().map(sale => `
+        <div class="sale-item">
+          <div>
+            <strong>${sale.name}</strong>
+            <small>${sale.date} · ${Number(sale.grams).toFixed(0)} g · ${money(Number(sale.price))} · costo ${money(Number(sale.cost) || 0)}</small>
+          </div>
+          <button class="icon-btn" type="button" title="Borrar venta" data-delete-sale="${sale.id}">×</button>
+        </div>
+      `).join("") : `<div class="notice">Todavia no registraste ventas en este mes.</div>`;
+      document.querySelectorAll("[data-delete-sale]").forEach(button => {
+        button.addEventListener("click", () => deleteSale(button.dataset.deleteSale));
+      });
+    }
+
+    function epecTierLabel(key) {
+      return {
+        low: "hasta 120 kWh/mes",
+        mid: "121 a 500 kWh/mes",
+        high: "501 a 700 kWh/mes",
+        veryHigh: "mas de 700 kWh/mes"
+      }[key];
+    }
+
+    function saveState() {
+      const state = {};
+      fields.forEach(el => state[el.id] = el.value);
+      localStorage.setItem("calc3dCordoba", JSON.stringify(state));
+      $("smartNote").textContent = "Valores guardados en este navegador.";
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem("calc3dCordoba");
+      if (!raw) return;
+      try {
+        const state = JSON.parse(raw);
+        fields.forEach(el => {
+          if (state[el.id] !== undefined) el.value = state[el.id];
+        });
+      } catch (_) {}
+    }
+
+    function resetState() {
+      localStorage.removeItem("calc3dCordoba");
+      location.reload();
+    }
+
+    function loadExample() {
+      $("jobName").value = "Mate personalizado 3 colores";
+      $("printer").value = "ad5x";
+      $("material").value = "pla";
+      $("grams").value = 145;
+      $("hours").value = 7;
+      $("minutes").value = 40;
+      $("failureRate").value = 10;
+      $("fixedConsumables").value = 450;
+      $("margin").value = 4;
+      syncPreset("printer");
+    }
+
+    function parseTime(text) {
+      const patterns = [
+        /;TIME:([0-9.]+)/i,
+        /estimated printing time.*?(\d+)h\s*(\d+)m\s*(\d*)s?/i,
+        /estimated printing time.*?(\d+)d\s*(\d+)h\s*(\d+)m/i,
+        /print time.*?(\d+)h\s*(\d+)m/i
+      ];
+      const cura = text.match(patterns[0]);
+      if (cura) return Number(cura[1]) / 3600;
+      const d = text.match(patterns[2]);
+      if (d) return Number(d[1]) * 24 + Number(d[2]) + Number(d[3]) / 60;
+      const hms = text.match(patterns[1]);
+      if (hms) return Number(hms[1]) + Number(hms[2]) / 60 + (Number(hms[3]) || 0) / 3600;
+      const hm = text.match(patterns[3]);
+      if (hm) return Number(hm[1]) + Number(hm[2]) / 60;
+      return null;
+    }
+
+    function parseFilament(text) {
+      const grams = text.match(/filament used \[g\]\s*=\s*([0-9.]+)/i) ||
+        text.match(/filament weight\s*=\s*([0-9.]+)/i) ||
+        text.match(/;Filament used:\s*([0-9.]+)\s*g/i);
+      if (grams) return Number(grams[1]);
+      const meters = text.match(/filament used \[mm\]\s*=\s*([0-9.]+)/i) ||
+        text.match(/;Filament used:\s*([0-9.]+)\s*m/i);
+      if (meters) {
+        const mm = text.includes(" m") ? Number(meters[1]) * 1000 : Number(meters[1]);
+        const radius = 1.75 / 2;
+        const volume = Math.PI * radius * radius * mm;
+        return volume * 1.24 / 1000;
+      }
+      return null;
+    }
+
+    fields.forEach(el => el.addEventListener("input", calculate));
+    $("printer").addEventListener("change", () => syncPreset("printer"));
+    $("material").addEventListener("change", () => syncPreset("material"));
+    $("btnSave").addEventListener("click", saveState);
+    $("btnReset").addEventListener("click", resetState);
+    $("btnPrint").addEventListener("click", () => window.print());
+    $("btnExample").addEventListener("click", loadExample);
+    $("btnAddSale").addEventListener("click", addSale);
+    ["saleName", "saleGrams", "salePrice"].forEach(id => {
+      $(id).addEventListener("input", () => {
+        $(id).dataset.touched = "1";
+        updateSaleCostPreview();
+      });
+    });
+    $("saleMonth").addEventListener("input", renderSales);
+
+    loadState();
+    calculate();
+    syncSaleDraft();
+    renderSales();
+
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
