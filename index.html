@@ -6,6 +6,7 @@
   <title>100% 3D - Presupuesto de Impresion 3D</title>
   <meta name="theme-color" content="#0b1117">
   <link rel="manifest" href="manifest.webmanifest">
+  <script src="cloud-config.js"></script>
   <style>
     :root {
       color-scheme: dark;
@@ -943,10 +944,13 @@
     </section>
   </main>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
   <script>
     const $ = (id) => document.getElementById(id);
     const fields = Array.from(document.querySelectorAll("input, select")).filter(el => el.id && el.type !== "file");
     let currentQuote = { price: 0, cost: 0, profit: 0, grams: 0 };
+    let cloud = { enabled: false, db: null, sales: null, expenses: null, products: null };
 
     const printers = {
       ad5x: {
@@ -1135,6 +1139,7 @@
     }
 
     function loadSales() {
+      if (cloud.enabled && Array.isArray(cloud.sales)) return cloud.sales;
       try {
         return JSON.parse(localStorage.getItem("calc3dSales") || "[]");
       } catch (_) {
@@ -1144,9 +1149,12 @@
 
     function saveSales(sales) {
       localStorage.setItem("calc3dSales", JSON.stringify(sales));
+      cloud.sales = sales;
+      saveCloudData({ sales });
     }
 
     function loadProducts() {
+      if (cloud.enabled && Array.isArray(cloud.products)) return cloud.products;
       try {
         return JSON.parse(localStorage.getItem("calc3dProducts") || "[]");
       } catch (_) {
@@ -1156,6 +1164,8 @@
 
     function saveProducts(products) {
       localStorage.setItem("calc3dProducts", JSON.stringify(products));
+      cloud.products = products;
+      saveCloudData({ products });
     }
 
     function saveCurrentProduct() {
@@ -1313,6 +1323,7 @@
     }
 
     function loadExpenses() {
+      if (cloud.enabled && Array.isArray(cloud.expenses)) return cloud.expenses;
       try {
         return JSON.parse(localStorage.getItem("calc3dExpenses") || "[]");
       } catch (_) {
@@ -1322,6 +1333,8 @@
 
     function saveExpenses(expenses) {
       localStorage.setItem("calc3dExpenses", JSON.stringify(expenses));
+      cloud.expenses = expenses;
+      saveCloudData({ expenses });
     }
 
     function addExpense() {
@@ -1379,6 +1392,46 @@
       document.querySelectorAll("[data-delete-expense]").forEach(button => {
         button.addEventListener("click", () => deleteExpense(button.dataset.deleteExpense));
       });
+    }
+
+    function cloudDoc() {
+      return cloud.db.collection("calculadora3d").doc("compartido");
+    }
+
+    function saveCloudData(data) {
+      if (!cloud.enabled || !cloud.db) return;
+      cloudDoc().set(data, { merge: true }).catch(() => {
+        $("smartNote").textContent = "No se pudo sincronizar con la nube. Se guardó local.";
+      });
+    }
+
+    function initCloudSync() {
+      const cfg = window.CALC3D_CLOUD;
+      if (!cfg || !cfg.enabled || !cfg.firebaseConfig || !cfg.firebaseConfig.projectId) return;
+      if (!window.firebase || !window.firebase.firestore) {
+        $("smartNote").textContent = "Firebase no cargó. La app sigue en modo local.";
+        return;
+      }
+      try {
+        firebase.initializeApp(cfg.firebaseConfig);
+        cloud.db = firebase.firestore();
+        cloud.enabled = true;
+        cloudDoc().onSnapshot((snapshot) => {
+          const data = snapshot.exists ? snapshot.data() : {};
+          cloud.sales = Array.isArray(data.sales) ? data.sales : loadSales();
+          cloud.expenses = Array.isArray(data.expenses) ? data.expenses : loadExpenses();
+          cloud.products = Array.isArray(data.products) ? data.products : loadProducts();
+          renderSales();
+          renderExpenses();
+          renderProducts();
+          $("smartNote").textContent = "Modo compartido activo.";
+        }, () => {
+          $("smartNote").textContent = "No se pudo leer la nube. La app sigue en modo local.";
+        });
+      } catch (_) {
+        cloud.enabled = false;
+        $("smartNote").textContent = "Firebase no está configurado. La app sigue en modo local.";
+      }
     }
 
     function epecTierLabel(key) {
@@ -1484,6 +1537,7 @@
 
     loadState();
     if (!$("expenseDate").value) $("expenseDate").value = todayKey();
+    initCloudSync();
     renderProducts();
     calculate();
     syncSaleDraft();

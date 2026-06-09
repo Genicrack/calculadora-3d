@@ -1,7 +1,8 @@
-const CACHE_NAME = "gena-gaspi-3d-v10";
+const CACHE_NAME = "gena-gaspi-3d-v11";
 const ASSETS = [
   "./",
   "./index.html",
+  "./cloud-config.js",
   "./manifest.webmanifest",
   "./assets/ad5x.webp",
   "./assets/tronxy-xy2-pro.jpg",
